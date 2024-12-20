@@ -122,6 +122,9 @@ export class App {
     logger.log('----------------------------------------');
     logger.log('Define Routes & Controllers');
     logger.log('----------------------------------------');
+    this.express.get('/', (_, res) => {
+      res.redirect('/health-check');
+    });
     this.express.get('/health-check', (_, res) => {
       res.status(OK).json({ status: 'success', health: '100%' });
     });
