@@ -41,11 +41,12 @@ export const redisConfig: RedisOptions = {
   showFriendlyErrorStack: true,
   enableOfflineQueue: false,
   maxRetriesPerRequest: null,
-  ...((isProd || isDev) && {
-    tls: {
-      rejectUnauthorized: false,
-    },
-  }),
+  tls: {}, // Enable TLS
+  // ...((isProd || isDev) && {
+  //   tls: {
+  //     rejectUnauthorized: false,
+  //   },
+  // }),
   db: 0,
 };
 
