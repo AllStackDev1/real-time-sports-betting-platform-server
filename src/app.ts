@@ -23,8 +23,13 @@ import {
 
 import { TYPES } from 'di/types';
 
-import { SocketService, RedisService } from 'services';
-import { AuthController, UserController } from 'controllers';
+import { SocketService, RedisService, SimulationService } from 'services';
+import {
+  AuthController,
+  UserController,
+  BetController,
+  GameController,
+} from 'controllers';
 
 @injectable()
 export class App {
@@ -47,6 +52,12 @@ export class App {
     private sessionHandler: SessionHandler,
     @inject(TYPES.RedisService)
     private redisService: RedisService,
+    @inject(TYPES.SimulationService)
+    private simulationService: SimulationService,
+    @inject(TYPES.BetController)
+    private betController: BetController,
+    @inject(TYPES.GameController)
+    private gameController: GameController,
   ) {}
 
   public async initialize() {
@@ -75,12 +86,14 @@ export class App {
       logger.log('Initialize Socket.IO listeners');
       logger.log('----------------------------------------');
       this.socketService.setupListeners();
+      this.simulationService.start();
     });
   }
 
   public async shutdown(callback: (err?: Error) => void) {
     await this.redisService.close();
     await sequelize.close();
+    this.simulationService.stop();
     this.server?.close(callback);
   }
 
@@ -101,7 +114,7 @@ export class App {
     logger.log('----------------------------------------');
     this.express.use(corsHandler);
     this.express.use(this.sessionHandler.handler);
-    this.express.use(this.rateLimitHandler.handler);
+    // this.express.use(this.rateLimitHandler.handler);
     this.express.use(loggerHandler);
   }
 
@@ -112,7 +125,15 @@ export class App {
     this.express.get('/health-check', (_, res) => {
       res.status(OK).json({ status: 'success', health: '100%' });
     });
-    defineRoutes([this.authController, this.userController], this.express);
+    defineRoutes(
+      [
+        this.authController,
+        this.userController,
+        this.betController,
+        this.gameController,
+      ],
+      this.express,
+    );
     this.express.use(
       '*',
       catchAsync(async (req) => {

@@ -4,6 +4,8 @@ import { Server as SocketIOServer } from 'socket.io';
 
 import { TYPES } from 'di/types';
 import { AuthService } from './auth.service';
+import { GameService } from './game.service';
+import { BetService } from './bet.service';
 
 @injectable()
 export class SocketService {
@@ -14,6 +16,10 @@ export class SocketService {
     httpServer: HttpServer,
     @inject(TYPES.AuthService)
     private authService: AuthService,
+    @inject(TYPES.GameService)
+    private gameService: GameService,
+    @inject(TYPES.BetService)
+    private betService: BetService,
   ) {
     // Initialize Socket.IO with the provided HTTP server
     this.io = new SocketIOServer(httpServer, {
@@ -43,66 +49,52 @@ export class SocketService {
         socket.disconnect(); // Disconnect if the token is invalid
       }
 
-      // Join a chat room based on the id
-      socket.on('joinRoom', async (chatId: string) => {
-        socket.join(chatId);
-        // find and update
-        // Broadcast to the room that a new user has joined
-        socket.broadcast.to(chatId).emit('userJoined', {
-          senderId: decoded?.sub,
-          sender: {
-            id: decoded?.sub || '',
-            firstName: decoded?.username.split(' ')[0] || '',
-            lastName: decoded?.username.split(' ')[1] || '',
-          },
-          timestamp: new Date().toISOString(),
-          message: `${decoded?.username} has joined.`,
-        });
-      });
+      // Broadcast game updates every 5 seconds
+      const broadcastInterval1 = setInterval(async () => {
+        try {
+          const { data: games } = await this.gameService.getGamesByQuery({});
 
-      // Leave a room
-      socket.on('leaveRoom', (chatId: string) => {
-        socket.leave(chatId);
-        socket.broadcast.to(chatId).emit('userLeft', {
-          senderId: decoded?.sub,
-          sender: {
-            id: decoded?.sub || '',
-            firstName: decoded?.username.split(' ')[0] || '',
-            lastName: decoded?.username.split(' ')[1] || '',
-          },
-          timestamp: new Date().toISOString(),
-          message: `${decoded?.username} has left`,
-        });
-      });
+          games.forEach((game) => {
+            if (game.timeRemaining !== 'Final') {
+              this.io.emit('gameData', game);
+            }
+          });
+        } catch (error) {
+          logger.error('Failed to broadcast games:', error);
+        }
+      }, 5000);
 
-      // Handle messages within a room
-      socket.on('message', async ({ chatId, message }) => {
-        const timestamp = new Date();
-        // Emit message to all users in the room
-        this.io.to(chatId).emit('message', {
-          senderId: decoded?.sub,
-          sender: {
-            id: decoded?.sub || '',
-            firstName: decoded?.username.split(' ')[0] || '',
-            lastName: decoded?.username.split(' ')[1] || '',
-          },
-          message,
-          timestamp: timestamp.toISOString(),
-        });
-      });
+      // Broadcast bet history updates every 5 seconds
+      const broadcastInterval2 = setInterval(async () => {
+        try {
+          const { data } = await this.betService.getBetsByQuery({
+            userId: decoded?.sub,
+          });
+          this.io.emit(`${decoded?.sub}-betHistoryUpdate`, data);
+        } catch (error) {
+          logger.error('Failed to broadcast games:', error);
+        }
+      }, 5000);
 
-      // Handle messages within a room
-      socket.on('isTyping', ({ chatId, isTyping }) => {
-        // Emit to all users in the room except for the sender
-        socket.broadcast.to(chatId).emit('isUserTyping', {
-          message: isTyping ? `${decoded?.username} is typing...` : '',
-        });
-      });
+      // Broadcast leaderboard updates every 5 seconds
+      const broadcastInterval3 = setInterval(async () => {
+        try {
+          const data = await this.betService.getLeaderboard();
+          this.io.emit('leaderboardUpdate', data);
+        } catch (error) {
+          logger.error('Failed to broadcast games:', error);
+        }
+      }, 5000);
 
       socket.on('disconnect', () => {
         logger.log('----------------------------------------');
         logger.log(`Socket client disconnected: ${socket.id}`);
         logger.log('----------------------------------------');
+
+        // Clear intervals on disconnect
+        clearInterval(broadcastInterval1);
+        clearInterval(broadcastInterval2);
+        clearInterval(broadcastInterval3);
       });
     });
   }

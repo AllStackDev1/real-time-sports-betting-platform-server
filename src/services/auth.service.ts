@@ -35,8 +35,7 @@ export interface IAuthService {
   register(dto: SignupSchema): Promise<
     | AppError
     | {
-        name: string;
-        email: string;
+        username: string;
       }
   >;
   validateJWT(
@@ -114,17 +113,17 @@ export class AuthService extends BaseService implements IAuthService {
     cacheKeysToClear: ['users'],
   })
   public async register(dto: SignupSchema) {
-    let user = await this.repo.getOne({ email: dto.email });
+    let user = await this.repo.getOne({ username: dto.username });
     if (user) {
-      throw new AppError('A user with this email already exist', CONFLICT);
+      throw new AppError('A user with this username already exist', CONFLICT);
     }
     user = await this.repo.create(dto);
-    return { name: user.getFullname(), email: user.email };
+    return { username: user.username };
   }
 
   public async authenticate(dto: LoginSchema) {
     const user = await this.repo.getOne(
-      { email: dto.email },
+      { username: dto.username },
       {
         attributes: { include: ['password'] },
       },

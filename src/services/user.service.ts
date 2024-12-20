@@ -44,7 +44,6 @@ export class UserService extends BaseService implements IUserService {
   private dto(user: UserModel) {
     const keys = [
       ...new Set<keyof UserModelDto>([
-        !user.dateOfBirth ? 'dateOfBirth' : 'password',
         !user.deletedAt ? 'deletedAt' : 'password',
         'password',
       ]),

@@ -12,32 +12,17 @@ import { decorate, injectable } from 'inversify';
 import sequelize from 'configs/sequelize.config';
 import { HASHING_SALT, jwtConfig } from 'configs/env.config';
 
-decorate(injectable(), Model);
-
-@injectable()
-export class UserModel extends Model<UserModelDto> {
-  declare email: string;
-  declare lastName: string;
+class UserModel extends Model<UserModelDto> {
   declare password: string;
-  declare firstName: string;
+  declare username: string;
   declare id?: CreationOptional<string>;
+  declare rank?: CreationOptional<number>;
+  declare email?: CreationOptional<string>;
+  declare balance?: CreationOptional<number>;
   declare createdAt?: CreationOptional<string>;
   declare updatedAt?: CreationOptional<string>;
   declare deletedAt?: CreationOptional<string>;
-  declare dateOfBirth?: CreationOptional<Date>;
-
-  getFullname() {
-    return this?.firstName + ' ' + this?.lastName;
-  }
-
-  getAge() {
-    if (!this?.dateOfBirth) {
-      return 0;
-    }
-    const birthYear = new Date(this?.dateOfBirth).getFullYear();
-    const currentYear = new Date().getFullYear();
-    return currentYear - birthYear;
-  }
+  declare totalWinnings?: CreationOptional<number>;
 
   async isPasswordMatch(password: string) {
     return await bcrypt.compare(password, this.password);
@@ -47,7 +32,7 @@ export class UserModel extends Model<UserModelDto> {
     const { secretKey, accessExpiresIn, refreshExpiresIn, defaultExpiresIn } =
       jwtConfig;
     return sign(
-      { sub: this.id, email: this.email, username: this.getFullname(), type },
+      { sub: this.id, email: this.email, username: this.username, type },
       secretKey,
       {
         expiresIn:
@@ -69,18 +54,18 @@ UserModel.init(
       defaultValue: UUIDV4,
       type: DataTypes.UUID,
     },
-    firstName: {
-      type: DataTypes.STRING,
+    username: {
       allowNull: false,
-    },
-    lastName: {
+      unique: true,
       type: DataTypes.STRING,
-      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
       unique: true,
+    },
+    balance: {
+      type: DataTypes.FLOAT,
+      defaultValue: 100.0,
     },
     password: {
       type: DataTypes.STRING,
@@ -90,9 +75,6 @@ UserModel.init(
         const hash = bcrypt.hashSync(value, salt + this.email);
         this.setDataValue('password', hash);
       },
-    },
-    dateOfBirth: {
-      type: DataTypes.DATE,
     },
     createdAt: {
       allowNull: false,
@@ -114,8 +96,17 @@ UserModel.init(
     defaultScope: {
       attributes: { exclude: ['password'] },
     },
+    hooks: {
+      beforeCreate: async (user: UserModel) => {
+        const count = await UserModel.count();
+        user.rank = count + 1;
+      },
+    },
   },
 );
 
+decorate(injectable(), UserModel);
+
+export { UserModel };
+
 export type UserModelDto = InferAttributes<UserModel>;
-// s

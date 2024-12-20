@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 
 export default [
-  { files: ['**/*.{js,mjs,cjs,ts}'] },
+  { files: ['**/*.{js,mjs,cjs,ts}'], ignores: ['**/build/**', './build/**'] },
   {
     languageOptions: {
       globals: {

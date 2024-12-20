@@ -1,6 +1,8 @@
 import z from 'zod';
 
+export * from './bet.zod.schema';
 export * from './user.zod.schema';
+export * from './game.zod.schema';
 
 export const ParamsWithId = z.object({
   id: z.string().uuid(),

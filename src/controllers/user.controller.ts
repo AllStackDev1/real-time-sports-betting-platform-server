@@ -40,19 +40,15 @@ export class UserController {
     return res.status(OK).json(await this.service.getUserById(req.params.id));
   }
 
-  @Route('patch', '/:id')
+  @Route('patch')
   @AuthGuard()
   @Validator({
     body: UserUpdateSchema,
-    params: ParamsWithId,
   })
-  async update(
-    req: Request<ParamsWithId, [], UserUpdateSchema>,
-    res: Response,
-  ) {
+  async update(req: Request<[], [], UserUpdateSchema>, res: Response) {
     return res.status(OK).json({
       message: 'User details updated successfully',
-      data: await this.service.update(req.params.id, req.body),
+      data: await this.service.update(req.user?.id ?? '', req.body),
     });
   }
 

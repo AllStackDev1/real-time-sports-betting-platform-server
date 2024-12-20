@@ -19,8 +19,11 @@ export class BaseRepository<K, T extends Model> {
     return await this.model.create(payload);
   }
 
-  public async getAll(query: WhereOptions<Attributes<T>> = {}) {
-    return await this.model.findAll({ where: query });
+  public async getAll(
+    query: WhereOptions<Attributes<T>> = {},
+    options?: Omit<FindOptions<Attributes<T>>, 'where'>,
+  ) {
+    return await this.model.findAll({ where: query, ...options });
   }
 
   public async getById(

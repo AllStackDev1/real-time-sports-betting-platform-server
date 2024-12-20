@@ -3,9 +3,8 @@ import z from 'zod';
 import { isEmpty } from 'utils/helper';
 
 export const SignupSchema = z.object({
-  lastName: z.string().min(1),
-  firstName: z.string().min(1),
-  email: z.string().email(),
+  username: z.string().min(1),
+  // email: z.string().email(),
   password: z
     .string()
     .min(6)
@@ -19,7 +18,7 @@ export const SignupSchema = z.object({
 export type SignupSchema = z.infer<typeof SignupSchema>;
 
 export const LoginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(1),
   password: z
     .string()
     .min(6)
@@ -59,23 +58,24 @@ export const ResetPasswordSchema = z.object({
 export type ResetPasswordSchema = z.infer<typeof ResetPasswordSchema>;
 
 export const UserQuerySchema = z.object({
-  lastName: z.string().optional(),
-  firstName: z.string().optional(),
+  username: z.string().optional(),
   email: z.string().email().optional(),
+  rank: z.number().optional(),
 });
 
 export type UserQuerySchema = z.infer<typeof UserQuerySchema>;
 
 export const UserUpdateSchema = z
   .object({
-    lastName: z.string().optional(),
-    firstName: z.string().optional(),
-    dateOfBirth: z.date().optional(),
+    email: z.string().optional(),
+    balance: z.number().optional(),
+    rank: z.number().optional(),
+    totalWinnings: z.number().optional(),
   })
   .partial()
   .refine((data) => !isEmpty(data), {
     message: 'One of the fields must be defined',
-    path: ['firstName', 'lastName', 'dateOfBirth'],
+    path: ['balance', 'email'],
   });
 
 export type UserUpdateSchema = z.infer<typeof UserUpdateSchema>;

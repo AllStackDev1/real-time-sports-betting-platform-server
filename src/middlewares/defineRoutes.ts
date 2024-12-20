@@ -1,9 +1,18 @@
 import { Express, RequestHandler } from 'express';
 
 import { catchAsync } from 'utils';
-import { AuthController, UserController } from 'controllers';
+import {
+  AuthController,
+  BetController,
+  UserController,
+  GameController,
+} from 'controllers';
 
-type IController = AuthController | UserController;
+type IController =
+  | AuthController
+  | UserController
+  | BetController
+  | GameController;
 
 type RouteHandler = Map<keyof Express, Map<string, RequestHandler[]>>;
 
