@@ -36,12 +36,11 @@ export const dbConfig: Options = {
 export const redisConfig: RedisOptions = {
   host: process.env.REDIS_HOST!,
   port: +process.env.REDIS_PORT!,
-  username: process.env.REDIS_USER!,
-  password: process.env.REDIS_PASSWORD!,
+  // username: process.env.REDIS_USER!,
+  // password: process.env.REDIS_PASSWORD!,
   showFriendlyErrorStack: true,
   enableOfflineQueue: false,
   maxRetriesPerRequest: null,
-  tls: {}, // Enable TLS
   // ...((isProd || isDev) && {
   //   tls: {
   //     rejectUnauthorized: false,
