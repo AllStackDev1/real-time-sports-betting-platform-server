@@ -41,7 +41,7 @@ export const redisConfig: RedisOptions = {
   showFriendlyErrorStack: true,
   enableOfflineQueue: false,
   maxRetriesPerRequest: null,
-  ...(isProd && {
+  ...((isProd || isDev) && {
     tls: {
       rejectUnauthorized: false,
     },
