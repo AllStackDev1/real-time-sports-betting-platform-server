@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig.json",
-  "exclude": ["src/tests/"]
+  "exclude": ["src/tests", "jest.config.ts"],
+  "compilerOptions": {
+    "types": ["reflect-metadata"]
+  }
 }
