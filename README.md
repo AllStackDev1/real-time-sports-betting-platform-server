@@ -1,6 +1,6 @@
-# Node.js + Express.js + TypeScript + Sequelize ORM + Redis + PostgreSQL
+# Real-Time Betting Platform
 
-An express server boilerplate built using the latest version of Node.js and integrates various modern technologies and practices to ensure a robust, scalable, and maintainable application, with out-of-the-box authentication and user creation logic implemented. Below are the key features and setup instructions for this boilerplate.
+This project was cloned from https://github.com/AllStackDev1/super-parakeet.git
 
 ## Features
 - **Express.js**: Web framework for Node.js.
@@ -91,45 +91,45 @@ An express server boilerplate built using the latest version of Node.js and inte
 
 - **Development**: 
   ```bash
-  pnpm run dev
+  npm run dev
   ```
   Starts the server in development mode with `nodemon`.
 
 - **Production**:
   ```bash
-  pnpm run start
+  npm run start
   ```
   Starts the server in production mode.
 
 - **Build**:
   ```bash
-  pnpm run build
+  npm run build
   ```
   Compiles TypeScript to JavaScript.
 
 - **Database**:
   - Create database:
     ```bash
-    pnpm run db:create
+    npm run db:create
     ```
   - Migrate up:
     ```bash
-    pnpm run db:migrate:up
+    npm run db:migrate:up
     ```
   - Migrate undo:
     ```bash
-    pnpm run db:migrate:undo
+    npm run db:migrate:undo
     ```
 
 - **Testing**:
   ```bash
-  pnpm run test
+  npm run test
   ```
   Runs unit tests using Jest.
 
 - **Linting**:
   ```bash
-  pnpm run lint
+  npm run lint
   ```
   Runs ESLint to check for code quality issues.
 
@@ -145,9 +145,8 @@ An express server boilerplate built using the latest version of Node.js and inte
 │   ├── db
 │   │    ├── migrations/
 │   │    ├── models/
-│   │    │     └── connection.ts
 │   │    ├── seeders/
-│   │    └── config.js
+│   │    └── config.ts
 │   ├── decorators/
 │   │    ├── controller.ts
 │   │    ├── route.ts
@@ -189,7 +188,7 @@ An express server boilerplate built using the latest version of Node.js and inte
 ├── eslint.config.mjs
 ├── jest.config.js
 ├── package.json
-├── pnpm-lock.yaml
+├── package-lock.yaml
 ├── README.md
 ├── tsconfig.build.json
 └── tsconfig.json
