@@ -7,7 +7,7 @@ import {
   WhereAttributeHashValue,
   FindOptions,
 } from 'sequelize';
-import { MakeNullishOptional } from 'sequelize/lib/utils';
+import { MakeNullishOptional } from 'sequelize/types/utils';
 
 export type ModelType<T extends Model<T>> = ModelStatic<T>;
 
@@ -15,8 +15,11 @@ export type ModelType<T extends Model<T>> = ModelStatic<T>;
 export class BaseRepository<K, T extends Model> {
   constructor(protected model: ModelType<T>) {}
 
-  public async create(payload: MakeNullishOptional<T['_creationAttributes']>) {
-    return await this.model.create(payload);
+  public async create(
+    payload: MakeNullishOptional<T['_creationAttributes']>,
+    options?: Omit<FindOptions<Attributes<T>>, 'where'>,
+  ) {
+    return await this.model.create(payload, options);
   }
 
   public async getAll(

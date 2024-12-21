@@ -52,12 +52,21 @@ export class GameService extends BaseService implements IGameService {
     );
   }
 
+  private include = {
+    include: [
+      {
+        model: OddsModel,
+        as: 'odds',
+      },
+    ],
+  };
+
   public async create(dto: GameCreateSchema) {
-    return await this.repo.create(dto);
+    return await this.repo.create(dto, this.include);
   }
 
-  public async getAllGames() {
-    const games = await this.repo.getAll();
+  public async getAllGames(query: GameQuerySchema = {}) {
+    const games = await this.repo.getAll(query);
     return {
       data: games,
       message: `${games.length} bet${games.length > 1 ? 's' : ''} found.`,
@@ -65,14 +74,7 @@ export class GameService extends BaseService implements IGameService {
   }
 
   public async getGamesByQuery(query: GameQuerySchema) {
-    const games = await this.repo.getAll(query, {
-      include: [
-        {
-          model: OddsModel,
-          as: 'odds',
-        },
-      ],
-    });
+    const games = await this.repo.getAll(query, this.include);
     return {
       data: games,
       message: `${games.length} game${games.length > 1 ? 's' : ''} found.`,
