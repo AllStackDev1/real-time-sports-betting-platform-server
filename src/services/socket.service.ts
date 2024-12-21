@@ -43,8 +43,7 @@ export class SocketService {
       const accessToken = socket.handshake.query.authorization as string;
 
       // Validate the token (if needed)
-      const { decoded, error } =
-        await this.authService.validateJWT(accessToken);
+      const { error } = await this.authService.validateJWT(accessToken);
       if (error) {
         socket.disconnect(); // Disconnect if the token is invalid
       }
@@ -64,20 +63,8 @@ export class SocketService {
         }
       }, 5000);
 
-      // Broadcast bet history updates every 5 seconds
-      const broadcastInterval2 = setInterval(async () => {
-        try {
-          const { data } = await this.betService.getBetsByQuery({
-            userId: decoded?.sub,
-          });
-          this.io.emit(`${decoded?.sub}-betHistoryUpdate`, data);
-        } catch (error) {
-          logger.error('Failed to broadcast games:', error);
-        }
-      }, 5000);
-
       // Broadcast leaderboard updates every 5 seconds
-      const broadcastInterval3 = setInterval(async () => {
+      const broadcastInterval2 = setInterval(async () => {
         try {
           const data = await this.betService.getLeaderboard();
           this.io.emit('leaderboardUpdate', data);
@@ -94,7 +81,9 @@ export class SocketService {
         // Clear intervals on disconnect
         clearInterval(broadcastInterval1);
         clearInterval(broadcastInterval2);
-        clearInterval(broadcastInterval3);
+
+        // Clean up any listeners or state
+        socket.removeAllListeners();
       });
     });
   }
