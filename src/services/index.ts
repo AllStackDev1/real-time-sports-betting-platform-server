@@ -1,3 +1,4 @@
+export * from './ai.service';
 export * from './auth.service';
 export * from './bet.service';
 export * from './game.service';

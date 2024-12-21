@@ -41,11 +41,6 @@ export const redisConfig: RedisOptions = {
   showFriendlyErrorStack: true,
   enableOfflineQueue: false,
   maxRetriesPerRequest: null,
-  // ...((isProd || isDev) && {
-  //   tls: {
-  //     rejectUnauthorized: false,
-  //   },
-  // }),
   db: 0,
 };
 
@@ -64,3 +59,5 @@ export const cookiesConfig = {
 export const SESSION_SECRET = process.env.SESSION_SECRET!;
 
 export const HASHING_SALT = process.env.HASHING_SALT!;
+
+export const OPEN_API_KEY = process.env.OPEN_API_KEY;

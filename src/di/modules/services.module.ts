@@ -13,14 +13,16 @@ import {
   RedisService,
   SocketService,
   SimulationService,
+  AIService,
 } from 'services';
 
 const initializeModule = (bind: interfaces.Bind) => {
+  bind(TYPES.AIService).to(AIService).inSingletonScope();
   bind(TYPES.RedisService).to(RedisService).inSingletonScope();
   bind(TYPES.SocketService).to(SocketService).inSingletonScope();
+  bind<IBetService>(TYPES.BetService).to(BetService).inSingletonScope();
   bind<IAuthService>(TYPES.AuthService).to(AuthService).inSingletonScope();
   bind<IUserService>(TYPES.UserService).to(UserService).inSingletonScope();
-  bind<IBetService>(TYPES.BetService).to(BetService).inSingletonScope();
   bind<IGameService>(TYPES.GameService).to(GameService).inSingletonScope();
   bind<SimulationService>(TYPES.SimulationService)
     .to(SimulationService)

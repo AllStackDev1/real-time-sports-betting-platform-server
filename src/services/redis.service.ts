@@ -35,7 +35,6 @@ export class RedisService {
     });
 
     redisClient.on('error', (err) => {
-      console.log(err);
       logger.error({ err }, 'Redis client connection error');
     });
 
