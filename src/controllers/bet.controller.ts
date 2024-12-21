@@ -18,7 +18,7 @@ export class BetController {
   @Route('get', '/')
   @AuthGuard()
   async getAll(req: Request, res: Response) {
-    const userId = req.user?.dataValues?.id;
+    const userId = req.session.user?.id || req.user?.dataValues?.id;
     return res.status(OK).json(await this.service.getBetsByQuery({ userId }));
   }
 

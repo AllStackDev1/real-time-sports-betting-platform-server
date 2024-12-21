@@ -4,12 +4,14 @@ import {
   DataTypes,
   InferAttributes,
   CreationOptional,
+  Association,
 } from 'sequelize';
 import { decorate, injectable } from 'inversify';
 
 import sequelize from 'configs/sequelize.config';
 import { UserModel } from './user.model';
 import { BetStatus, TeamType } from 'validators';
+import { GameModel } from './game';
 
 class BetModel extends Model<BetModelDto> {
   declare odds: number;
@@ -21,6 +23,10 @@ class BetModel extends Model<BetModelDto> {
   declare createdAt?: CreationOptional<string>;
   declare updatedAt?: CreationOptional<string>;
   declare selectedTeam: TeamType;
+
+  declare static associations: {
+    game: Association<GameModel, GameModel>;
+  };
 }
 
 BetModel.init(
@@ -78,9 +84,11 @@ BetModel.init(
 
 // Define associations within the models
 BetModel.belongsTo(UserModel, { foreignKey: 'userId', as: 'user' });
+BetModel.belongsTo(GameModel, { foreignKey: 'gameId', as: 'game' });
 
 decorate(injectable(), BetModel);
 
 export { BetModel };
 
 export type BetModelDto = InferAttributes<BetModel>;
+//
